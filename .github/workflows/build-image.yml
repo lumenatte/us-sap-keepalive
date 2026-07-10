@@ -28,4 +28,4 @@ jobs:
           file: ./Dockerfile
           push: true
           # 关键点：将用户名强制转为纯小写，彻底绕过组织包权限拦截
-          tags: ghcr.io/${{ github.repository_owner }}/sap-keepalive:latest
+          tags: ghcr.io/${{ github.repository_owner }}/us-sap-keepalive:latest
