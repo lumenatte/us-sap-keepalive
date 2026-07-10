@@ -2,7 +2,7 @@ name: SAP CF APP保活
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -24,8 +24,11 @@ jobs:
           cf --version
 
       - name: Login and restart
+        env:
+          HTTPS_PROXY: ${{ secrets.VPS_PROXY }}
         run: |
           set -e
+          export CF_TRACE=true
           cf api "${{ secrets.CF_API }}"
           cf auth "${{ secrets.CF_USERNAME }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o "${{ secrets.CF_ORG }}" -s "${{ secrets.CF_SPACE }}"
