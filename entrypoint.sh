@@ -12,10 +12,10 @@ XRAY_BIN="/usr/local/bin/xray"
 XRAY_CONFIG="/etc/xray/config.json"
 
 # 节点相关参数，从环境变量读取，方便通过 cf set-env 修改而不用重新 build 镜像
-UUID="${UUID:-171753f8-6cb0-4c50-8267-c076832c113b}"
-DOMAIN="${DOMAIN:-SG-Azure.cfapps.ap21.hana.ondemand.com}"
+UUID="${UUID:-cd5a3b08-a46d-4660-bce0-ec7be16429c9}"
+DOMAIN="${DOMAIN:-US-aws-eluke.cfapps.us10-001.hana.ondemand.com}"
 WS_PATH="${WS_PATH:-/lumenatte}"
-REMARK="${REMARK:-dev-SG-Azure}"
+REMARK="${REMARK:-US-AWS-US-aws-eluke}"
 LISTEN_PORT="${PORT:-8080}"   # CF 会自动注入 PORT，容器内必须监听这个端口
 
 # ==========================================
