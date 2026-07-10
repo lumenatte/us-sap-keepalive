@@ -1,4 +1,7 @@
 name: HTTP Keepalive
+permissions:
+  contents: read
+  packages: write
 on:
   schedule:
     - cron: '*/15 * * * *'
