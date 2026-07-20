@@ -14,5 +14,8 @@ jobs:
     steps:
       - name: Ping app
         run: |
-          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://api.cf.us10-001.hana.ondemand.com)
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://US-aws-eluke.cfapps.us10-001.hana.ondemand.com/)
           echo "HTTP status: $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 500 ]; then
+            echo "::warning::App may be unhealthy, status=$code"
+          fi
