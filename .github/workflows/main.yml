@@ -32,6 +32,19 @@ jobs:
           cf api "${{ secrets.CF_API }}"
           cf auth "${{ secrets.CF_USERNAME }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o "${{ secrets.CF_ORG }}" -s "${{ secrets.CF_SPACE }}"
-          cf stop "${{ secrets.CF_APP }}" || true
-          cf start "${{ secrets.CF_APP }}"
+
+          STATE=$(cf app "${{ secrets.CF_APP }}" | grep -E '^requested state' | awk '{print $NF}')
+          echo "Current state: $STATE"
+
+          if [ "$STATE" != "started" ]; then
+             echo "App not started, attempting to start..."
+             for i in 1 2 3; do
+               cf start "${{ secrets.CF_APP }}" && break
+               echo "Start attempt $i failed, retrying in 60s..."
+               sleep 60
+             done
+          else
+            echo "App already running, skip restart."
+          fi
+
           cf app "${{ secrets.CF_APP }}"
