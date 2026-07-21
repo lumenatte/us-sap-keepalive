@@ -8,14 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  ping:
+  ping-us-aws:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Ping app
+      - name: Ping app (us-aws)
         run: |
           code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://US-aws-eluke.cfapps.us10-001.hana.ondemand.com/)
           echo "HTTP status: $code"
           if [ "$code" -lt 200 ] || [ "$code" -ge 500 ]; then
-            echo "::warning::App may be unhealthy, status=$code"
+            echo "::warning::US-AWS app may be unhealthy, status=$code"
+          fi
+
+  ping-us-aws2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping app (us-aws2)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://US-aws2-eluking.cfapps.us10-001.hana.ondemand.com/)
+          echo "HTTP status: $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 500 ]; then
+            echo "::warning::US-AWS2 app may be unhealthy, status=$code"
           fi
