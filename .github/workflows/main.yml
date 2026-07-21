@@ -10,10 +10,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  keepalive:
+  keepalive-us-aws:
     runs-on: ubuntu-latest
+    environment: us-aws-eluke      # 👈 关键:指定用哪个 Environment 的 secrets
     timeout-minutes: 8
-
     steps:
       - name: Install cf CLI
         run: |
@@ -37,12 +37,51 @@ jobs:
           echo "Current state: $STATE"
 
           if [ "$STATE" != "started" ]; then
-             echo "App not started, attempting to start..."
-             for i in 1 2 3; do
-               cf start "${{ secrets.CF_APP }}" && break
-               echo "Start attempt $i failed, retrying in 60s..."
-               sleep 60
-             done
+            echo "App not started, attempting to start..."
+            for i in 1 2 3; do
+              cf start "${{ secrets.CF_APP }}" && break
+              echo "Start attempt $i failed, retrying in 60s..."
+              sleep 60
+            done
+          else
+            echo "App already running, skip restart."
+          fi
+
+          cf app "${{ secrets.CF_APP }}"
+
+  keepalive-us-aws2:
+    runs-on: ubuntu-latest
+    environment: us-aws-eluking    # 👈 第二个空间用另一个 Environment
+    timeout-minutes: 8
+    steps:
+      - name: Install cf CLI
+        run: |
+          curl -fsSL https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo gpg --dearmor -o /usr/share/keyrings/cf-cli-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/cf-cli-archive-keyring.gpg] https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+          sudo apt-get update
+          sudo apt-get install -y cf8-cli
+          cf --version
+
+      - name: Login and restart
+        env:
+          HTTPS_PROXY: ${{ secrets.VPS_PROXY }}
+        run: |
+          set -e
+          export CF_TRACE=true
+          cf api "${{ secrets.CF_API }}"
+          cf auth "${{ secrets.CF_USERNAME }}" "${{ secrets.CF_PASSWORD }}"
+          cf target -o "${{ secrets.CF_ORG }}" -s "${{ secrets.CF_SPACE }}"
+
+          STATE=$(cf app "${{ secrets.CF_APP }}" | grep -E '^requested state' | awk '{print $NF}')
+          echo "Current state: $STATE"
+
+          if [ "$STATE" != "started" ]; then
+            echo "App not started, attempting to start..."
+            for i in 1 2 3; do
+              cf start "${{ secrets.CF_APP }}" && break
+              echo "Start attempt $i failed, retrying in 60s..."
+              sleep 60
+            done
           else
             echo "App already running, skip restart."
           fi
