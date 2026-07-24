@@ -26,6 +26,7 @@ jobs:
       - name: Login and restart
         env:
           HTTPS_PROXY: ${{ secrets.VPS_PROXY }}
+          CF_DOCKER_PASSWORD: ${{ secrets.CF_DOCKER_PASSWORD || secrets.GITHUB_TOKEN }} # 👈 添加此行：自动提供 GHCR 私有拉取凭证
         run: |
           set -e
           export CF_TRACE=true
@@ -65,6 +66,7 @@ jobs:
       - name: Login and restart
         env:
           HTTPS_PROXY: ${{ secrets.VPS_PROXY }}
+          CF_DOCKER_PASSWORD: ${{ secrets.CF_DOCKER_PASSWORD || secrets.GITHUB_TOKEN }} # 👈 添加此行：自动提供 GHCR 私有拉取凭证
         run: |
           set -e
           export CF_TRACE=true
